@@ -1,149 +1,106 @@
-# Groq AI Voice Assistant
+# Groq Voice Chat
 
-A Python-based voice assistant powered by Groq's API for fast and efficient AI responses.
+A Streamlit web app for voice-first AI chat: speak or type, get Groq-powered replies with optional text-to-speech.
+
+**Pipeline:** Voice in → Whisper STT → Groq LLM → Orpheus TTS → Voice out
 
 ## Overview
 
-This project implements a voice-interactive AI assistant that leverages the Groq API to provide rapid AI-powered responses. The assistant can process voice input and deliver intelligent outputs using Groq's optimized inference engine.
+This project is a single-page Streamlit app that uses the Groq API for:
+
+- **Speech-to-text (STT):** Whisper Large v3 (Turbo or full) to transcribe your recordings
+- **Chat:** Multiple Groq models (Llama 3.1 8B, Llama 3.3 70B, DeepSeek R1, Gemma2 9B, Llama 4 Scout, Kimi K2)
+- **Text-to-speech (TTS):** Orpheus (canopylabs) with selectable voices for assistant replies
+
+You can use the in-browser mic to speak or type in the chat input; conversation history, token stats, and average response time are shown in the sidebar.
 
 ## Features
 
-- 🎤 Voice input processing
-- 🤖 AI-powered responses via Groq API
-- ⚡ Fast inference using Groq's LPU technology
-- 🔊 Voice output capabilities
-- 💬 Natural language conversation support
+- 🎤 **Voice input** — Record with the built-in audio widget; Whisper transcribes to text
+- 💬 **Text input** — Type messages as a fallback
+- 🤖 **Multiple chat models** — Llama 3.1 8B (fast), Llama 3.3 70B, DeepSeek R1, Gemma2 9B, Llama 4 Scout, Kimi K2
+- ⚡ **Streaming responses** — LLM output streams in real time
+- 🔊 **TTS playback** — Assistant replies can be spoken with Orpheus (6 voices)
+- ⚙️ **Sidebar settings** — System prompt, temperature, max tokens, history length, STT model, TTS voice
+- 📊 **Session stats** — Turn count, approximate tokens, average response time; clear conversation button
 
 ## Prerequisites
 
-Before running this project, ensure you have:
-
-- Python 3.8 or higher
-- A Groq API key (get one at [Groq Console](https://console.groq.com))
-- Required Python dependencies (see Installation section)
+- Python 3.12+
+- A [Groq API key](https://console.groq.com)
 
 ## Installation
 
 1. Clone the repository:
-```bash
-git clone https://github.com/tammannajanawad/groq_ai_voice_assistant.git
-cd groq_ai_voice_assistant
-```
 
-2. Create a virtual environment (recommended):
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
+   ```bash
+   git clone <your-repo-url>
+   cd streamlit_chatbot
+   ```
 
-3. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+2. Create a virtual environment and install dependencies (e.g. with uv):
 
-4. Set up your Groq API key:
-```bash
-export GROQ_API_KEY="your-api-key-here"  # On Windows: set GROQ_API_KEY=your-api-key-here
-```
+   ```bash
+   uv venv
+   source .venv/bin/activate   # Windows: .venv\Scripts\activate
+   uv sync
+   ```
+
+   Or with pip:
+
+   ```bash
+   pip install -e .
+   ```
+
+3. Add your Groq API key to a `.env` file in the project root:
+
+   ```
+   GROQ_API_KEY=your-api-key-here
+   ```
+
+   The app loads this via `python-dotenv`.
 
 ## Usage
 
-Run the voice assistant:
+Run the Streamlit app:
 
 ```bash
-python main.py
+streamlit run main.py
 ```
 
-Or import as a module:
-```python
-from groq_ai_voice_assistant import VoiceAssistant
-
-assistant = VoiceAssistant()
-assistant.start()
-```
+Then open the URL shown in the terminal (usually http://localhost:8501). Use the mic to record or type in the chat box; adjust models and settings in the sidebar.
 
 ## Configuration
 
-You can customize the assistant behavior by modifying the configuration file or environment variables:
+- **Environment:** `GROQ_API_KEY` in `.env` (required).
+- **In-app:** All other options are in the Streamlit sidebar:
+  - Chat model, system prompt, temperature, max tokens, history turns
+  - STT model (Whisper Large v3 Turbo / Large v3)
+  - TTS voice (Autumn, Diana, Hannah, Austin, Daniel, Troy)
 
-- `GROQ_API_KEY`: Your Groq API authentication key
-- `MODEL`: The Groq model to use (default: mixtral-8x7b-32768)
-- `VOICE_INPUT`: Enable/disable voice input (default: true)
-- `VOICE_OUTPUT`: Enable/disable voice output (default: true)
-
-## Project Structure
+## Project structure
 
 ```
-groq_ai_voice_assistant/
+streamlit_chatbot/
 ├── README.md
-├── requirements.txt
-├── main.py
-├── config.py
-├── voice_processor.py
-├── ai_assistant.py
-└── utils.py
+├── main.py          # Streamlit app (STT, LLM, TTS, UI)
+├── pyproject.toml
+├── uv.lock
+└── .env             # GROQ_API_KEY (not committed)
 ```
 
-## Technologies Used
+## Technologies
 
-- **Python** - Core language
-- **Groq API** - AI inference engine
-- **Speech Recognition** - Voice input processing
-- **Text-to-Speech** - Voice output
-
-## API Reference
-
-### VoiceAssistant
-
-Main class for interacting with the voice assistant.
-
-**Methods:**
-- `start()`: Start the voice assistant
-- `process_voice_input(audio)`: Process voice input
-- `get_ai_response(prompt)`: Get AI response from Groq
-- `play_audio(text)`: Convert text to speech and play
+- **Streamlit** — Web UI and session state
+- **Groq API** — Chat completions, Whisper STT, Orpheus TTS
+- **python-dotenv** — Load `GROQ_API_KEY` from `.env`
 
 ## Troubleshooting
 
-### Issue: API Key Not Found
-Ensure your `GROQ_API_KEY` environment variable is properly set.
-
-### Issue: Audio Processing Failed
-Check that your microphone and speakers are properly connected and recognized by your system.
-
-### Issue: Slow Responses
-This might indicate issues with your internet connection. The Groq API should respond very quickly under normal conditions.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+- **GROQ_API_KEY not found:** Ensure `.env` exists in the project root and contains `GROQ_API_KEY=...`.
+- **STT/TTS errors:** Check Groq status and your API key; ensure microphone is allowed in the browser for voice input.
+- **Slow responses:** Check network; Groq typically responds quickly.
 
 ## License
 
-This project is open source and available under the MIT License. See LICENSE file for details.
-
-## Support
-
-For issues and questions:
-- Open an issue on [GitHub Issues](https://github.com/tammannajanawad/groq_ai_voice_assistant/issues)
-- Check existing documentation in the project
-- Review Groq API documentation at [docs.groq.com](https://docs.groq.com)
-
-## Acknowledgments
-
-- [Groq](https://groq.com) for providing the powerful LPU inference engine
-- Python community for excellent libraries
-
-## Author
-
-**Tammanna Janawad** - [@tammannajanawad](https://github.com/tammannajanawad)
-
----
-
-**Note:** This is a template README. Please update it with specific details about your implementation, actual project structure, and any additional features as your project develops.
+MIT (or your chosen license). See LICENSE for details.
